@@ -13,12 +13,18 @@ public class AntiPrimesSequence {
      * The numbers in the sequence.
      */
     private List<Number> antiPrimes = new ArrayList<>();
+    private Observer obs;
+    private Thread t;
+    private NumberProcessor n;
 
     /**
      * Create a new sequence containing only the first antiprime (the number '1').
      */
     public AntiPrimesSequence() {
         this.reset();
+        n = new NumberProcessor(antiPrimes);
+        t = new Thread(n);
+        t.start();
     }
 
     /**
@@ -32,8 +38,9 @@ public class AntiPrimesSequence {
     /**
      * Find a new antiprime and add it to the sequence.
      */
-    public void computeNext() {
-        antiPrimes.add(AntiPrimes.nextAntiPrimeAfter(getLast()));
+    public synchronized void computeNext() {
+        //n.wakeUp();
+        obs.update();
     }
 
     /**
@@ -52,5 +59,9 @@ public class AntiPrimesSequence {
         if (k > n)
             k = n;
         return antiPrimes.subList(n - k, n);
+    }
+
+    public void setObs(Observer obs) {
+        this.obs = obs;
     }
 }
